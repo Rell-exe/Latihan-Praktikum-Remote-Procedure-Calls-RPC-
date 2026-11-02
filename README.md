@@ -22,11 +22,22 @@ Proyek mini mata kuliah Komputasi Paralel dan Terdistribusi. Implementasi menggu
 
 ```text
 Proyek_RPC_Reservasi_Bioskop/
-├── proto/bioskop.proto
-├── server.py
-├── client.py
-├── benchmark.py
-├── tests/test_race.py
+├── proto/bioskop.proto           # Definisi antarmuka gRPC & Protocol Buffers (proto3)
+├── server.py                     # Python gRPC Server (port 50051) dengan SQLite WAL
+├── api_gateway.py                # FastAPI HTTP REST & WebSocket Gateway (port 8000)
+├── client.py                     # CLI Client gRPC dengan retry exponential backoff
+├── benchmark.py                  # Script benchmark throughput & latency
+├── start_all.ps1 / .bat          # Script peluncur satu klik untuk seluruh stack
+├── tests/test_race.py            # Uji konkurensi 20 client
+├── frontend/                     # CineReserve Web Application
+│   ├── src/
+│   │   ├── components/           # Header, DateSelector, MovieDetails, SeatMap, E-Ticket, dll.
+│   │   ├── services/             # REST API & WebSocket streaming client
+│   │   ├── types/                # TypeScript interface definitions
+│   │   ├── App.tsx               # Main Dashboard & Modal orchestration
+│   │   └── main.tsx
+│   ├── package.json
+│   └── vite.config.ts
 ├── requirements.txt
 ├── Dockerfile
 ├── docker-compose.yml

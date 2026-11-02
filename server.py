@@ -76,25 +76,46 @@ def init_db():
             FOREIGN KEY(showtime_id) REFERENCES showtimes(showtime_id)
         );
         """)
-        showtime = "FILM-001-2026-11-05-19:00"
-        conn.execute(
-            "INSERT OR IGNORE INTO showtimes VALUES (?, ?, ?)",
-            (showtime, "Film Contoh", utc_now()),
-        )
-        conn.execute(
-            "INSERT OR IGNORE INTO system_version(showtime_id, version) VALUES (?, 0)",
-            (showtime,),
-        )
-        for row in range(1, 6):
-            for col in range(1, 9):
-                seat = f"{chr(64 + row)}{col:02d}"
-                conn.execute(
-                    "INSERT OR IGNORE INTO seats(showtime_id, seat_id, status) VALUES (?, ?, 'AVAILABLE')",
-                    (showtime, seat),
-                )
+        # Daftar jadwal tayang: kompatibilitas demo + 7 hari x 4 jam tayang
+        dates = [f"2026-11-{d:02d}" for d in range(18, 25)]
+        times = ["11:45", "13:20", "16:45", "22:20"]
+        all_showtimes = ["FILM-001-2026-11-05-19:00"] + [
+            f"FILM-001-{d}-{t}" for d in dates for t in times
+        ]
+
+        for st in all_showtimes:
+            conn.execute(
+                "INSERT OR IGNORE INTO showtimes VALUES (?, ?, ?)",
+                (st, "Avatar: The Way of Water", utc_now()),
+            )
+            conn.execute(
+                "INSERT OR IGNORE INTO system_version(showtime_id, version) VALUES (?, 0)",
+                (st,),
+            )
+            for row in range(1, 8):  # A s/d G (7 baris)
+                for col in range(1, 17):  # 01 s/d 16 (16 kursi per baris) = 112 kursi
+                    seat = f"{chr(64 + row)}{col:02d}"
+                    conn.execute(
+                        "INSERT OR IGNORE INTO seats(showtime_id, seat_id, status) VALUES (?, ?, 'AVAILABLE')",
+                        (st, seat),
+                    )
+
+        # Berikan beberapa kursi terpesan contoh pada jadwal pertama agar UI langsung tampak realistis
+        sample_st = "FILM-001-2026-11-18-11:45"
+        sample_booked = ["C07", "C08", "D08", "D09", "E11", "E12"]
+        for b_seat in sample_booked:
+            b_res_id = str(uuid.uuid4())
+            conn.execute(
+                "INSERT OR IGNORE INTO reservations VALUES (?, ?, ?, 'demo-client-001', 'Demo User', 'ACTIVE', ?, NULL)",
+                (b_res_id, sample_st, b_seat, utc_now()),
+            )
+            conn.execute(
+                "UPDATE seats SET status='BOOKED', reservation_id=? WHERE showtime_id=? AND seat_id=?",
+                (b_res_id, sample_st, b_seat),
+            )
     finally:
         conn.close()
-    log.info("Database siap. Jadwal demo: FILM-001-2026-11-05-19:00")
+    log.info("Database siap. Total %d jadwal diinisialisasi dengan 112 kursi (A01-G16) per jadwal.", len(all_showtimes))
 
 
 def utc_now():

@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --brand-bg: #07111F;
+    --brand-panel: #0D1726;
+    --brand-panel-secondary: #111F30;
+    --brand-seat-available: #14558B;
+    --brand-seat-selected: #159BFA;
+    --brand-seat-booked: #252C38;
+    --brand-accent: #159BFA;
+    --brand-text-primary: #F5F7FA;
+    --brand-text-secondary: #929DAD;
+    --brand-gold: #EBD66D;
+    --brand-confirmation-bg: #1A1A1A;
+    --brand-ticket-bg: #FFF0A5;
+  }
+
+  body {
+    background-color: var(--brand-bg);
+    color: var(--brand-text-primary);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #091322;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e2c40;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2b3d56;
+}
+
+/* Ticket Notches & Perforation */
+.ticket-notch-left {
+  position: absolute;
+  left: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--brand-confirmation-bg);
+}
+
+.ticket-notch-right {
+  position: absolute;
+  right: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--brand-confirmation-bg);
+}
+
+.ticket-perforation {
+  background-image: linear-gradient(to right, #6b5c1f 50%, rgba(255, 255, 255, 0) 0%);
+  background-position: bottom;
+  background-size: 12px 2px;
+  background-repeat: repeat-x;
+}
+
+/* Glow effects */
+.glow-accent {
+  box-shadow: 0 0 20px -3px rgba(21, 155, 250, 0.45);
+}
+
+.glow-seat-selected {
+  box-shadow: 0 0 14px 2px rgba(21, 155, 250, 0.65);
+}
+
+.glow-screen {
+  box-shadow: 0 8px 30px -4px rgba(21, 155, 250, 0.5);
+}
+
+.glow-gold {
+  text-shadow: 0 0 18px rgba(235, 214, 109, 0.4);
+}
