@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package bioskop;
+
+service ReservasiBioskop {
+  // Unary: meminta satu kursi untuk satu jadwal tayang.
+  rpc PesanKursi (PesanKursiRequest) returns (PesanKursiResponse);
+
+  // Server streaming: mengirim snapshot awal dan pembaruan status kursi.
+  rpc StreamStatusKursi (StreamStatusRequest) returns (stream StatusKursiUpdate);
+
+  // Unary: mengambil denah/status seluruh kursi pada satu jadwal.
+  rpc GetDenahKursi (DenahKursiRequest) returns (DenahKursiResponse);
+
+  // Unary: membatalkan reservasi yang masih aktif.
+  rpc BatalkanReservasi (BatalkanReservasiRequest) returns (OperasiResponse);
+
+  // Unary: memeriksa kesiapan layanan.
+  rpc HealthCheck (HealthRequest) returns (HealthResponse);
+}
+
+message PesanKursiRequest {
+  string request_id = 1;       // UUID yang sama untuk semua percobaan retry
+  string client_id = 2;
+  string showtime_id = 3;
+  string seat_id = 4;
+  string nama_pemesan = 5;
+}
+
+message PesanKursiResponse {
+  bool sukses = 1;
+  string pesan = 2;
+  string reservation_id = 3;
+  string seat_id = 4;
+  string status = 5;
+}
+
+message StreamStatusRequest {
+  string showtime_id = 1;
+  int32 max_duration_seconds = 2; // 0 berarti memakai batas default server
+}
+
+message Kursi {
+  string seat_id = 1;
+  string status = 2; // AVAILABLE atau BOOKED
+  string reservation_id = 3;
+}
+
+message StatusKursiUpdate {
+  string showtime_id = 1;
+  repeated Kursi kursi = 2;
+  int64 version = 3;
+  string server_time = 4;
+  string pesan = 5;
+}
+
+message DenahKursiRequest {
+  string showtime_id = 1;
+}
+
+message DenahKursiResponse {
+  bool ditemukan = 1;
+  string pesan = 2;
+  repeated Kursi kursi = 3;
+  int64 version = 4;
+}
+
+message BatalkanReservasiRequest {
+  string request_id = 1;
+  string client_id = 2;
+  string reservation_id = 3;
+}
+
+message OperasiResponse {
+  bool sukses = 1;
+  string pesan = 2;
+  string reservation_id = 3;
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  bool sehat = 1;
+  string pesan = 2;
+  string versi = 3;
+}

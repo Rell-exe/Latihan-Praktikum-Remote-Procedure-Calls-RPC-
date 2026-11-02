@@ -1,0 +1,17 @@
+services:
+  bioskop-server:
+    build: .
+    container_name: bioskop-rpc-server
+    ports:
+      - "50051:50051"
+    environment:
+      GRPC_HOST: "0.0.0.0"
+      GRPC_PORT: "50051"
+      BIOSKOP_DB: "/app/data/bioskop.db"
+      GRPC_WORKERS: "20"
+    volumes:
+      - bioskop_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  bioskop_data:
