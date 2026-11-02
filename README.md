@@ -1,5 +1,4 @@
 # Latihan-Praktikum-Remote-Procedure-Calls-RPC-
-
 Studi Kasus Reservasi tiket bioskop
 
 ## Sistem Terdistribusi Reservasi Tiket Bioskop Berbasis gRPC
