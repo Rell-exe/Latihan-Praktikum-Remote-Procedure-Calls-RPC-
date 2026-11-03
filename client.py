@@ -7,7 +7,11 @@ import grpc
 import bioskop_pb2 as pb
 import bioskop_pb2_grpc as pb_grpc
 
-SERVER = os.getenv("BIOSKOP_SERVER", "localhost:50051")
+import sys
+
+SERVER = sys.argv[1] if len(sys.argv) > 1 else os.getenv("BIOSKOP_SERVER", "localhost:50051")
+if ":" not in SERVER:
+    SERVER = f"{SERVER}:50051"
 SHOWTIME = os.getenv("BIOSKOP_SHOWTIME", "FILM-001-2026-11-05-19:00")
 CLIENT_ID = os.getenv("BIOSKOP_CLIENT_ID", f"client-{uuid.uuid4().hex[:8]}")
 
