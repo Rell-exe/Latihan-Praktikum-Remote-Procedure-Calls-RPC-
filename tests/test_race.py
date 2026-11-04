@@ -69,7 +69,7 @@ def main():
         print(f"Client {index:02d}: {status} - {result[1]}")
 
     assert winners == 1, f"Seharusnya tepat 1 pemenang, tetapi didapat {winners}"
-    print("\n✅ LULUS: Tepat 1 client berhasil memesan, 19 lainnya ditolak tanpa merusak data.")
+    print("\nLULUS: Tepat 1 client berhasil memesan, 19 lainnya ditolak tanpa merusak data.")
 
 
 if __name__ == "__main__":

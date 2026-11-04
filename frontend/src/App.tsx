@@ -29,7 +29,8 @@ export function App() {
   const [clientId] = useState<string>(() => {
     const saved = localStorage.getItem('cinereserve_client_id');
     if (saved) return saved;
-    const newId = `client-${crypto.randomUUID().slice(0, 8)}`;
+    const randomHex = Math.random().toString(36).substring(2, 10);
+    const newId = 'client-' + randomHex;
     localStorage.setItem('cinereserve_client_id', newId);
     return newId;
   });
