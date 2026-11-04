@@ -251,6 +251,10 @@ class ReservasiBioskop(pb_grpc.ReservasiBioskopServicer):
                 (request.request_id, fp, json.dumps(result, ensure_ascii=False), utc_now()),
             )
             conn.commit()
+            log.info("PesanKursi dari %s: kursi=%s, nama=%s -> %s (res_id=%s)",
+                     request.client_id, request.seat_id, request.nama_pemesan,
+                     "BERHASIL" if result["sukses"] else "DITOLAK",
+                     result.get("reservation_id", "-"))
             return pb.PesanKursiResponse(**result)
         except grpc.RpcError:
             raise
@@ -273,6 +277,8 @@ class ReservasiBioskop(pb_grpc.ReservasiBioskopServicer):
             if not exists:
                 return pb.DenahKursiResponse(ditemukan=False, pesan="Jadwal tidak ditemukan")
             rows = get_seat_rows(conn, request.showtime_id)
+            log.info("GetDenahKursi: showtime=%s -> ditemukan=True (%d kursi)",
+                     request.showtime_id, len(rows))
             return pb.DenahKursiResponse(
                 ditemukan=True,
                 pesan=f"Denah memuat {len(rows)} kursi",
@@ -291,6 +297,8 @@ class ReservasiBioskop(pb_grpc.ReservasiBioskopServicer):
             context.abort(grpc.StatusCode.INVALID_ARGUMENT, "showtime_id wajib diisi")
         duration = request.max_duration_seconds or STREAM_DEFAULT_SECONDS
         duration = max(1, min(duration, 300))
+        log.info("StreamStatusKursi: client terhubung memantau showtime=%s (durasi=%ds)",
+                 request.showtime_id, duration)
         started = time.monotonic()
         last_signature = None
 
@@ -384,6 +392,9 @@ class ReservasiBioskop(pb_grpc.ReservasiBioskopServicer):
                 (request.request_id, fp, json.dumps(result, ensure_ascii=False), utc_now()),
             )
             conn.commit()
+            log.info("BatalkanReservasi dari %s: res_id=%s -> %s",
+                     request.client_id, request.reservation_id,
+                     "SUKSES" if result["sukses"] else "GAGAL")
             return pb.OperasiResponse(**result)
         except grpc.RpcError:
             raise
@@ -399,6 +410,7 @@ class ReservasiBioskop(pb_grpc.ReservasiBioskopServicer):
             conn = connect_db()
             conn.execute("SELECT 1").fetchone()
             conn.close()
+            log.info("HealthCheck: ping diterima dari client")
             return pb.HealthResponse(sehat=True, pesan="Server dan database siap",
                                      versi="1.0.0")
         except sqlite3.Error:
